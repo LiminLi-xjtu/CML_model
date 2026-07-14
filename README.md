@@ -1,9 +1,9 @@
-# RAG (Attributed Graph Refinement)
-An official source code for paper **Attributed Graph Refinement via low rank
-approximation and subspace learning**.
+# CML (Cross-Modality Learning)
+The official source code for paper **Cross-Modality Learning on Heavily Noisy
+Attributed Graphs**,including methods T-CML (Topology-driven Cross-Modality Learning) and A-CML (Attribute-driven Cross-Modality Learning ).
 
 ## Environments
-The proposed RAG is implemented with python 3.8.8 on CPU.
+The proposed CML is implemented with python 3.8.8 on CPU.
 All results in the paper are from running on an i7-10700 CPU.
 
 No GPU required!
@@ -38,15 +38,15 @@ All original attributed graph datasets is ```cora.mat```, ```citeseer.mat```, ``
 These can used as the inputs in the multi-stage RAG ```RAGsSC.py```.
 
 ## Model
-Our RAG model is in ```model.py```.
+Our T-CML and A-CML model is in ```model.py```.
 
 
 ## Quick Start
-Running node clustering of RAG: ```python RAGSC.py```. Just select the dataset you need to run.
+Running node clustering of T-CML: ```python run_TCML.py```. Just select the dataset you need to run.
 
-Running node clustering of multi-stage RAG: ```python RAGsSC.py```. You need to select the dataset and stage number you want.
+Running node clustering of multi-stage RAG: ```python TCMLs.py```. You need to select the dataset and stage number you want.
 
-(Before running ```python RAGsSC.py```, please make sure that the full dataset has been downloaded in Google Drive and saved in the ```data/``` directory.)
+(Before running ```python TCMLs.py```, please make sure that the full dataset has been downloaded in Google Drive and saved in the ```data/``` directory.)
 
 
 ## Simulation Experiments
@@ -54,6 +54,6 @@ Running node clustering of multi-stage RAG: ```python RAGsSC.py```. You need to 
 ```generate_data_X=XZ.py``` is to generate different noise simulation attributed graphs.
 ```xzdata.npz``` is the simulated attributed graph data we used in paper.
 
-Running RAG on simulated attributed graph: ```python RAG.py```.
+Running CML on simulated attributed graph: ```python RAG.py```.
 
 Running SLSA on simulated attributed graph: ```python SLSA_A+X.py```.
