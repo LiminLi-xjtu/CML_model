@@ -208,12 +208,20 @@ def kmeans_clustering_mean(u, gnd, n_iter=50, k=3):
 # acc_mean, acc_std, nmi_mean, nmi_std, f1_mean, f1_std = kmeans_clustering_mean(u, gnd, n_iter=50, k=3)
 
 
-def gaussian_kernel(X, sigma):
+def gaussian_kernel_sigma(X, sigma):
     dists = np.sum(X ** 2, axis=1)[:, np.newaxis] + np.sum(X ** 2, axis=1) - 2 * np.dot(X, X.T)
     # sigma = np.mean(dists)
     dists = dists.astype(np.float64)
     sigma = np.float64(sigma)
     K = np.exp(-sigma*dists)
+    return K
+
+def gaussian_kernel(X):
+    dists = np.sum(X ** 2, axis=1)[:, np.newaxis] + np.sum(X ** 2, axis=1) - 2 * np.dot(X, X.T)
+    sigma = np.mean(dists)
+    dists = dists.astype(np.float64)
+    sigma = np.float64(sigma)
+    K = np.exp(-sigma*dists)  #K = np.exp(- dists/(2*sigma**2))
     return K
 
 
@@ -306,13 +314,13 @@ def update_local_best(err, err_old, acc, nmi, F1, iter, local_best_acc, local_be
 
 
 dataset_params = {
-    "cora": {"eta": 300000, "alpha": 0.3, "beta": 1, "lamb": 0.6, "t": 16, "max_iter": 50, },
-    "citeseer": {"eta": 600000, "alpha": 0.07, "beta": 0.01, "lamb": 0, "t": 8, "max_iter": 50, },
-    "wiki": {"eta": 600000, "alpha": 1, "beta": 1, "lamb": 3, "t": 4, "max_iter": 100, },
-    "acm": {"eta": 2800000, "alpha": 0.198347, "beta": 1, "lamb": 0, "t": 5, "max_iter": 30, },
-    "dblp": {"eta": 1000000, "alpha": 0.05, "beta": 0.5, "lamb": 0.1, "t": 1, "max_iter": 30, },
-    "cora_sorted": {"eta": 300000, "alpha": 0.3, "beta": 1, "lamb": 0.5, "t": 16, "max_iter": 30, },
-    "citeseer_sorted": {"eta": 600000, "alpha": 0.075, "beta": 0.01, "lamb": 0, "t": 8, "max_iter": 50, },
+    "cora": {"eta": 300000, "alpha": 115, "beta": 1, "lamb": 0.6, "t": 16, "max_iter": 50, },
+    "citeseer": {"eta": 600000, "alpha": 42, "beta": 0.01, "lamb": 0, "t": 8, "max_iter": 50, },
+    "wiki": {"eta": 300000, "alpha": 150, "beta": 1, "lamb": 3, "t": 4, "max_iter": 50, },  #"eta": 600000, "alpha": 1, "beta": 1, "lamb": 3, "t": 4, "max_iter": 100
+    "acm": {"eta": 2800000, "alpha": 200, "beta": 1, "lamb": 0, "t": 5, "max_iter": 30, },
+    "dblp": {"eta": 1000000, "alpha": 50, "beta": 0.5, "lamb": 0.1, "t": 1, "max_iter": 30, },
+    "cora_sorted": {"eta": 300000, "alpha": 115, "beta": 1, "lamb": 0.5, "t": 16, "max_iter": 30, },
+    "citeseer_sorted": {"eta": 600000, "alpha": 42, "beta": 0.01, "lamb": 0, "t": 8, "max_iter": 50, },
 }
 
 
@@ -332,13 +340,13 @@ def load_dataset(dataset):
         X = features_struct['features']
         gnd = features_struct['labels'] - 1  # 标签从 0 开始
         A = features_struct['adjacency']
-    elif dataset in ["cora", "citeseer", "wiki", "acm", "dblp"]:
+    elif dataset in ["cora", "citeseer", "wiki", "acm", "dblp","pubmed"]:
         data = sio.loadmat(f"data/{dataset}.mat")
         X = data["fea"]
         A = data["W"]
         gnd = data["gnd"]
 
-        if dataset in ["cora", "citeseer", "wiki"]:
+        if dataset in ["cora", "citeseer", "wiki","pubmed"]:
             gnd = gnd.T[0] - 1
         elif dataset in ["acm", "dblp"]:
             gnd = gnd[0, :]
@@ -351,16 +359,16 @@ def load_dataset(dataset):
 
 stage_dataset_params = {
     "cora": {
-        2: {"eta": 500000, "alpha": 0.25, "beta": 1, "lamb": 0, "t": 4, "tau": 0.005, "max_iter": 50, "k": 7},
-        3: {"eta": 650000, "alpha": 0.25, "beta": 1, "lamb": 0, "t": 4, "tau": 0.005, "max_iter": 50, "k": 7},
+        2: {"eta": 500000, "alpha": 100, "beta": 1, "lamb": 0, "t": 4, "tau": 0.005, "max_iter": 50, "k": 7},
+        3: {"eta": 650000, "alpha": 100, "beta": 1, "lamb": 0, "t": 4, "tau": 0.005, "max_iter": 50, "k": 7},
     },
     "citeseer": {
-        2: {"eta": 600000, "alpha": 0.007, "beta": 1, "lamb": 0.4, "t": 4, "tau": 0.005, "max_iter": 30, "k": 6},
-        3: {"eta": 600000, "alpha": 0.007, "beta": 1, "lamb": 0.4, "t": 4, "tau": 0.005, "max_iter": 30, "k": 6},
+        2: {"eta": 600000, "alpha": 4, "beta": 1, "lamb": 0.4, "t": 4, "tau": 0.005, "max_iter": 30, "k": 6},
+        3: {"eta": 600000, "alpha": 4, "beta": 1, "lamb": 0.4, "t": 4, "tau": 0.005, "max_iter": 30, "k": 6},
     },
     "acm": {
-        2: {"eta": 2800000, "alpha": 0.187, "beta": 1, "lamb": 0, "t": 1, "tau": 0.05, "max_iter": 10, "k": 3},
-        3: {"eta": 2800000, "alpha": 0.187, "beta": 1, "lamb": 0, "t": 1, "tau": 0.05, "max_iter": 100, "k": 3},
+        2: {"eta": 2800000, "alpha": 200, "beta": 1, "lamb": 0, "t": 1, "tau": 0.05, "max_iter": 10, "k": 3},
+        3: {"eta": 2800000, "alpha": 200, "beta": 1, "lamb": 0, "t": 1, "tau": 0.05, "max_iter": 100, "k": 3},
     },
 }
 
@@ -388,3 +396,29 @@ def load_and_process_data(dataset, stage):
     if has_nonpositive_element(A):
         A = replace_negative_with_zero(A)
     return A, X, gnd
+
+
+
+
+ACML_simulation_params = {
+"A0.1+X0.1":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 100, "lamb": 1, "k_max": 150, "tol": 0.001 },
+"A0.1+X0.3":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 100, "lamb": 1, "k_max": 150, "tol": 0.001 },
+"A0.1+X0.5":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 100, "lamb": 1, "k_max": 150, "tol": 0.001 },
+"A0.1+X0.7":  {"eta": 10000, "K": 3, "alpha": 1, "beta": 1, "gamma": 10, "lamb": 1, "k_max": 250, "tol": 0.001 },
+"A0.3+X0.1":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 100, "lamb": 1, "k_max": 150, "tol": 0.001 },
+"A0.3+X0.3":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 100, "lamb": 1, "k_max": 150, "tol": 0.001 },
+"A0.3+X0.5":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 100, "lamb": 1, "k_max": 150, "tol": 0.001 },
+"A0.3+X0.7":  {"eta": 10000, "K": 3, "alpha": 5, "beta": 1, "gamma": 50, "lamb": 1, "k_max": 250, "tol": 0.001 },
+"A0.5+X0.1":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 500, "lamb": 1, "k_max": 150, "tol": 0.001 },
+"A0.5+X0.3":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 500, "lamb": 1, "k_max": 150, "tol": 0.001 },
+"A0.5+X0.5":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 100, "lamb": 1, "k_max": 150, "tol": 0.001 },
+"A0.5+X0.7":  {"eta": 10000, "K": 3, "alpha": 5, "beta": 1, "gamma": 50, "lamb": 1, "k_max": 250, "tol": 0.001 },
+"A0.7+X0.1":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 100, "lamb": 1, "k_max": 150, "tol": 0.001 },
+"A0.7+X0.3":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 100, "lamb": 1, "k_max": 150, "tol": 0.001 },
+"A0.7+X0.5":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 100, "lamb": 1, "k_max": 150, "tol": 0.001 },
+"A0.7+X0.7":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 100, "lamb": 1, "k_max": 250, "tol": 0.001 },
+"A0.9+X0.1":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 500, "lamb": 1, "k_max": 150, "tol": 0.001 },
+"A0.9+X0.3":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 500, "lamb": 1, "k_max": 150, "tol": 0.001 },
+"A0.9+X0.5":  {"eta": 10000, "K": 3, "alpha": 10, "beta": 1, "gamma": 500, "lamb": 1, "k_max": 150, "tol": 0.001 },
+"A0.9+X0.7":  {"eta": 10000, "K": 3, "alpha": 3, "beta": 1, "gamma": 500, "lamb": 1, "k_max": 100, "tol": 0.001 },
+}
