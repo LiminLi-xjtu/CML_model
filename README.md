@@ -24,7 +24,10 @@ If you are using Anaconda, an identical environment can also be created by using
 
 
 ## Datasets
-The 6 datasets we used: Cora, Citeseer, ACM, WiKi, DBLP, PubMed.
+
+We use the simulation dataset ```data/graph_noise_epsilon_square2.mat```, which contains A and X at various noise levels. The code for generating the simulation data can be found in ```generate simulation data/```.
+
+We used six real attribute graph datasets: Cora, Citeseer, ACM, WiKi, DBLP, PubMed.
 The ```data/``` holds several small datasets that can be used as demos. 
 The full dataset can be accessed at https://drive.google.com/drive/folders/10Y2uqmQy21HPfgKBvxMov1svskxkOxXf?usp=sharing .
 If you want to run the full dataset, just download all the data and put them in the ```data/``` directory.
@@ -33,9 +36,9 @@ All original attributed graph datasets is ```cora.mat```, ```citeseer.mat```, ``
 
 ```cora_sorted.npz``` and ```citeseer_sorted.npz``` is the version after sorting by sample category, conveniently used to visualize matrix block diagonal effects.
 
-```...Z1.npz``` is the result Z of completing the first stage of RAG for each dataset.
-```...Z2.npz``` is the result Z of completing the second stage of RAG for each dataset.
-These can used as the inputs in the multi-stage RAG ```RAGsSC.py```.
+```...Z1.npz``` is the result Z of completing the first stage of T-CML for each dataset.
+```...Z2.npz``` is the result Z of completing the second stage of T-CML for each dataset.
+These can used as the inputs in the multi-stage T-CML ```TCMLs.py```.
 
 ## Model
 Our T-CML and A-CML model is in ```model.py```.
@@ -44,16 +47,14 @@ Our T-CML and A-CML model is in ```model.py```.
 ## Quick Start
 Running node clustering of T-CML: ```python run_TCML.py```. Just select the dataset you need to run.
 
-Running node clustering of multi-stage RAG: ```python TCMLs.py```. You need to select the dataset and stage number you want.
+Running node clustering of multi-stage T-CML: ```python TCMLs.py```. You need to select the dataset and stage number you want.
 
 (Before running ```python TCMLs.py```, please make sure that the full dataset has been downloaded in Google Drive and saved in the ```data/``` directory.)
 
 
 ## Simulation Experiments
-```subspace simulation/``` contains all subspace attributed graph simulation experiments.
-```generate_data_X=XZ.py``` is to generate different noise simulation attributed graphs.
-```xzdata.npz``` is the simulated attributed graph data we used in paper.
+Running T-CML on simulated attributed graph: ```python T-CML simulation.py```.
 
-Running CML on simulated attributed graph: ```python RAG.py```.
+Running A-CML on simulated attributed graph: ```python A-CML simulation.py```.
 
-Running SLSA on simulated attributed graph: ```python SLSA_A+X.py```.
+For the combinations of A and X with different noise levels, only the input data needs to be changed. For example, ```A_name = 'A0_3', X_name = 'X0_5'``` is corresponding respectively to $A(\delta=0.3)$ and $X(\epsilon=0.5)$.
