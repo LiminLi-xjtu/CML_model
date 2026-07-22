@@ -10,8 +10,8 @@ if __name__ == '__main__':
     mat_path = 'data/graph_noise_epsilon_square2.mat'
     mat_data = sio.loadmat(mat_path)
 
-    A_name = 'A0_1'
-    X_name = 'X0_7'
+    A_name = 'A0_9'
+    X_name = 'X0_3'
     A = mat_data[A_name]
     X = mat_data[X_name].T
     gnd = mat_data['labels'].flatten()
