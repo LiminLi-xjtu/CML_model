@@ -45,9 +45,9 @@ Our T-CML and A-CML model is in ```model.py```.
 
 
 ## Quick Start
-Running node clustering of T-CML: ```python run_TCML.py```. Just select the dataset you need to run.
+Running node clustering of T-CML: ```python run_CML.py```. Just select the dataset you need to run.
 
-Running node clustering of multi-stage T-CML: ```python TCMLs.py```. You need to select the dataset and stage number you want.
+Running node clustering of multi-stage T-CML: ```python run_CMLs.py```. You need to select the dataset and stage number you want.
 
 (Before running ```python TCMLs.py```, please make sure that the full dataset has been downloaded in Google Drive and saved in the ```data/``` directory.)
 
